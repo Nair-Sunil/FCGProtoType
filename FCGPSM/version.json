@@ -1,6 +1,6 @@
 {
   "version": "0.9",
-  "assemblyVersion": "0.9",
+  "assemblyVersion": "2.0",
   "inherit": false,
   "pathFilters": [
     "FCGPSM"
