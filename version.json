@@ -18,6 +18,9 @@
   },
   "gitCommitIdShortFixedLength": 8,
   "inherit": false,
+  "pathFilters": [
+    ":!version.json"
+  ],
   "release": {
     "branchName": "release/{version}"
   }
