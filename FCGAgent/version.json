@@ -3,6 +3,7 @@
   "assemblyVersion": "0.9",
   "inherit": false,
   "pathFilters": [
-    "FCGAgent"
+    "./FCGAgent",
+	":!/version.json"
   ]
 }
