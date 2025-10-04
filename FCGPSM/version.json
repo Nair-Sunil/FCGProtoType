@@ -3,6 +3,7 @@
   "assemblyVersion": "2.0",
   "inherit": false,
   "pathFilters": [
-    "FCGPSM"
+    "./FCGPSM",
+	":!/version.json"
   ]
 }
