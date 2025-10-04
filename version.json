@@ -17,9 +17,6 @@
     "setAllVariables": true
   },
   "gitCommitIdShortFixedLength": 8,
-  "pathFilters": [
-    "."
-  ],
   "inherit": false,
   "release": {
     "branchName": "release/{version}"
