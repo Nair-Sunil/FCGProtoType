@@ -1,0 +1,87 @@
+name: Build FCGAgent
+
+on:
+  workflow_dispatch:
+
+permissions:
+  packages: write
+  contents: read
+
+jobs:
+  build:
+    runs-on: [self-hosted, fcg-agent]   # use your self-hosted Windows runner
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        working-directory: FCGAgent
+        run: dotnet restore
+
+      - name: Build project
+        shell: cmd
+        working-directory: FCGAgent
+        run: build-all.bat
+        
+      - name: Find latest MSI
+        id: artifact
+        shell: powershell
+        run: |
+          $searchPath = 'FCGAgent\FCGWixInstaller\BuildOutput'
+          Write-Host "Searching for MSI under: $searchPath"
+          $msi = Get-ChildItem -Path $searchPath -Filter '*.msi' -Recurse -ErrorAction SilentlyContinue |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object -First 1
+
+          if (-not $msi) {
+            Write-Error "No MSI found in '$searchPath'. Ensure the build step produced an installer."
+            exit 1
+          }
+
+          Write-Host "Found MSI: $($msi.FullName)"
+          "msi_path=$($msi.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "msi_name=$($msi.Name)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+            
+      - name: Login to GHCR
+        shell: powershell
+        env:
+          GHCR_PAT: ${{ secrets.GHCR_PAT }}
+        run: |
+          if ($env:GHCR_PAT) {
+            Write-Host "Using GHCR_PAT from secrets to authenticate to ghcr.io"
+            $token = $env:GHCR_PAT
+          } else {
+            Write-Host "GHCR_PAT not present; falling back to GITHUB_TOKEN"
+            $token = "${{ secrets.GITHUB_TOKEN }}"
+          }
+
+          $user = '${{ github.actor }}'
+          Write-Host "Attempting GHCR login as user: $user"
+          $token | oras login ghcr.io -u $user --password-stdin
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "GHCR login failed with exit code $LASTEXITCODE"
+            exit 1
+          }
+
+      - name: Upload deliverable to GHCR
+        shell: powershell
+        run: |
+          $msi = '${{ steps.artifact.outputs.msi_path }}'
+          $repo = "ghcr.io/${{ github.repository_owner }}/fcg-installer:${{ github.run_number }}"
+          Write-Host "Pushing MSI to: $repo"
+          Write-Host "MSI path: $msi"
+
+          oras push $repo "$msi:application/vnd.ms-msi"
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "oras push failed with exit code $LASTEXITCODE"
+            exit 1
+          }
+
+      - name: Show uploaded package info
+        run: |
+          oras repo ls ghcr.io/${{ github.repository_owner }}
