@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: [self-hosted, fcg-agent]   # use your self-hosted Windows runner
+    runs-on: [self-hosted]   # use your self-hosted Windows runner
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
