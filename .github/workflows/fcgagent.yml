@@ -23,46 +23,12 @@ jobs:
         working-directory: FCGAgent
         run: dotnet restore
 
-      - name: Build project
-        shell: cmd
-        working-directory: FCGAgent
-        run: build-all.bat
-        
-      - name: Find latest MSI
-        id: artifact
-        shell: powershell
-        run: |
-          $searchPath = 'FCGAgent\FCGWixInstaller\BuildOutput'
-          Write-Host "Searching for MSI under: $searchPath"
-          $msi = Get-ChildItem -Path $searchPath -Filter '*.msi' -Recurse -ErrorAction SilentlyContinue |
-            Sort-Object LastWriteTime -Descending |
-            Select-Object -First 1
-
-          if (-not $msi) {
-            Write-Error "No MSI found in '$searchPath'. Ensure the build step produced an installer."
-            exit 1
-          }
-
-          Write-Host "Found MSI: $($msi.FullName)"
-          "msi_path=$($msi.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-          "msi_name=$($msi.Name)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-            
       - name: Login to GHCR
         shell: powershell
-        env:
-          GHCR_PAT: ${{ secrets.GHCR_PAT }}
         run: |
-          if ($env:GHCR_PAT) {
-            Write-Host "Using GHCR_PAT from secrets to authenticate to ghcr.io"
-            $token = $env:GHCR_PAT
-          } else {
-            Write-Host "GHCR_PAT not present; falling back to GITHUB_TOKEN"
-            $token = "${{ secrets.GITHUB_TOKEN }}"
-          }
-
           $user = '${{ github.actor }}'
           Write-Host "Attempting GHCR login as user: $user"
-          $token | oras login ghcr.io -u $user --password-stdin
+          echo "${{ secrets.GHCR_PAT }}" | oras login ghcr.io -u $user --password-stdin
           if ($LASTEXITCODE -ne 0) {
             Write-Error "GHCR login failed with exit code $LASTEXITCODE"
             exit 1
