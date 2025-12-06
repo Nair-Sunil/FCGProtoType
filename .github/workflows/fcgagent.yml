@@ -19,10 +19,10 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Install ORAS
-        shell: powershell
-        run: |
-          winget install --id ORASProject.ORAS -e --accept-source-agreements --accept-package-agreements
+#      - name: Install ORAS
+#        shell: powershell
+#        run: |
+#          winget install --id ORASProject.ORAS -e --accept-source-agreements --accept-package-agreements
 
       - name: Debug if secret exists
         shell: powershell
