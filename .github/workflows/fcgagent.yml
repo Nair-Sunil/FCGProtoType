@@ -26,7 +26,7 @@ jobs:
             Write-Error "❌ MYREPO_PAT is missing or unavailable!"
           } else {
             Write-Host "✅ MYREPO_PAT is present"
-            Set-Content -Path c:\token.txt -Value "${{ secrets.MYREPO_PAT }}"
+            Set-Content -Path c:\token.txt -Value "${{ secrets.MYREPO_PAT }}".Trim()
           }
 
       - name: Login to GHCR
