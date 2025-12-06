@@ -41,7 +41,7 @@ jobs:
           $token = "${{ secrets.MYREPO_PAT }}"
           $token = $token.TrimEnd("`r","`n")
           Set-Content -Path c:\token.txt -Value "${{ secrets.MYREPO_PAT }}"
-          $token | oras login ghcr.io -u $user --password-stdin
+          $token | oras login ghcr.io -d -u $user --password-stdin 
           if ($LASTEXITCODE -ne 0) {
             Write-Error "GHCR login failed with exit code $LASTEXITCODE"
             exit 1
