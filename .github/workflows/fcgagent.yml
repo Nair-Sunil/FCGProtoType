@@ -19,6 +19,15 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      - name: Debug if secret exists
+        shell: powershell
+        run: |
+          if ([string]::IsNullOrEmpty("${{ secrets.GHCR_PAT }}")) {
+            Write-Error "❌ GHCR_PAT is missing or unavailable!"
+          } else {
+            Write-Host "✅ GHCR_PAT is present"
+          }
+
       - name: Login to GHCR
         shell: powershell
         run: |
