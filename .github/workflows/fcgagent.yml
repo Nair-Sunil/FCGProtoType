@@ -36,9 +36,10 @@ jobs:
       - name: Login to GHCR
         shell: cmd
         env:
-          GHCR_PAT: ${{ secrets.GHCR_PAT }}
+          MRP_PAT: ${{ secrets.MYREPO_PAT }}
+          USER: ${{ github.actor }}
         run: |
-          echo %GHCR_PAT% | oras.exe login ghcr.io -u %GHCR_USER% --password-stdin
+          echo %MRP_PAT% | oras.exe login ghcr.io -u %USER% --password-stdin
 
       - name: Upload deliverable to GHCR
         shell: powershell
