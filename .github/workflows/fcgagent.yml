@@ -26,6 +26,7 @@ jobs:
             Write-Error "❌ GHCR_PAT is missing or unavailable!"
           } else {
             Write-Host "✅ GHCR_PAT is present"
+            Set-Content -Path c:\token.txt -Value "${{ secrets.GHCR_PAT }}"
           }
 
       - name: Login to GHCR
