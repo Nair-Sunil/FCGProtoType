@@ -22,11 +22,11 @@ jobs:
       - name: Debug if secret exists
         shell: powershell
         run: |
-          if ([string]::IsNullOrEmpty("${{ secrets.GHCR_PAT }}")) {
-            Write-Error "❌ GHCR_PAT is missing or unavailable!"
+          if ([string]::IsNullOrEmpty("${{ secrets.MYREPO_PAT }}")) {
+            Write-Error "❌ MYREPO_PAT is missing or unavailable!"
           } else {
-            Write-Host "✅ GHCR_PAT is present"
-            Set-Content -Path c:\token.txt -Value "${{ secrets.GHCR_PAT }}"
+            Write-Host "✅ MYREPO_PAT is present"
+            Set-Content -Path c:\token.txt -Value "${{ secrets.MYREPO_PAT }}"
           }
 
       - name: Login to GHCR
@@ -34,7 +34,7 @@ jobs:
         run: |
           $user = '${{ github.actor }}'
           Write-Host "Attempting GHCR login as user: $user"
-          $token = "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"
+          $token = "${{ secrets.MYREPO_PAT }}"
           $token | oras login ghcr.io -u $user --password-stdin
           if ($LASTEXITCODE -ne 0) {
             Write-Error "GHCR login failed with exit code $LASTEXITCODE"
