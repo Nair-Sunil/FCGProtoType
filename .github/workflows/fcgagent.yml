@@ -40,21 +40,10 @@ jobs:
           USER: ${{ github.actor }}
         run: |
           echo %MRP_PAT% | oras.exe login ghcr.io -u %USER% --password-stdin
-
-      - name: Upload deliverable to GHCR
-        shell: powershell
-        run: |
-          $msi = '${{ steps.artifact.outputs.msi_path }}'
-          $repo = "ghcr.io/${{ github.repository_owner }}/fcg-installer:${{ github.run_number }}"
-          Write-Host "Pushing MSI to: $repo"
-          Write-Host "MSI path: $msi"
-
-          oras push $repo "$msi:application/vnd.ms-msi"
-          if ($LASTEXITCODE -ne 0) {
-            Write-Error "oras push failed with exit code $LASTEXITCODE"
-            exit 1
-          }
+          oras push ghcr.io/%USER%/CaevesInstaller/Caeves.FCG.App.Release:1.0
 
       - name: Show uploaded package info
+        env:
+          USER: ${{ github.actor }}
         run: |
-          oras repo ls ghcr.io/${{ github.repository_owner }}
+          oras repo ls ghcr.io/%USER%/CaevesInstaller
