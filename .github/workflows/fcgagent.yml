@@ -34,7 +34,7 @@ jobs:
         run: |
           $user = '${{ github.actor }}'
           Write-Host "Attempting GHCR login as user: $user"
-          $token = "${{ secrets.MYREPO_PAT }}"
+          $token = "${{ secrets.MYREPO_PAT }}".Trim()
           $token | oras login ghcr.io -u $user --password-stdin
           if ($LASTEXITCODE -ne 0) {
             Write-Error "GHCR login failed with exit code $LASTEXITCODE"
