@@ -26,7 +26,6 @@ jobs:
             Write-Error "❌ MYREPO_PAT is missing or unavailable!"
           } else {
             Write-Host "✅ MYREPO_PAT is present"
-            Set-Content -Path c:\token.txt -Value "${{ secrets.MYREPO_PAT }}".Trim()
           }
 
       - name: Login to GHCR
@@ -34,7 +33,9 @@ jobs:
         run: |
           $user = '${{ github.actor }}'
           Write-Host "Attempting GHCR login as user: $user"
-          $token = "${{ secrets.MYREPO_PAT }}".Trim()
+          $token = "${{ secrets.MYREPO_PAT }}"
+          $token = $token.TrimEnd("`r","`n")
+          Set-Content -Path c:\token.txt -Value "${{ secrets.MYREPO_PAT }}"
           $token | oras login ghcr.io -u $user --password-stdin
           if ($LASTEXITCODE -ne 0) {
             Write-Error "GHCR login failed with exit code $LASTEXITCODE"
