@@ -23,7 +23,6 @@ jobs:
         shell: powershell
         run: |
           winget install --id ORASProject.ORAS -e --accept-source-agreements --accept-package-agreements
-          oras version
 
       - name: Debug if secret exists
         shell: powershell
