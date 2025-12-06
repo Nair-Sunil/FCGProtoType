@@ -34,18 +34,11 @@ jobs:
           }
 
       - name: Login to GHCR
-        shell: powershell
+        shell: cmd
+        env:
+          GHCR_PAT: ${{ secrets.GHCR_PAT }}
         run: |
-          $user = '${{ github.actor }}'
-          Write-Host "Attempting GHCR login as user: $user"
-          $token = "${{ secrets.MYREPO_PAT }}"
-          $token = $token.TrimEnd("`r","`n")
-          Set-Content -Path c:\token.txt -Value "${{ secrets.MYREPO_PAT }}"
-          $token | oras login ghcr.io -d -u $user --password-stdin 
-          if ($LASTEXITCODE -ne 0) {
-            Write-Error "GHCR login failed with exit code $LASTEXITCODE"
-            exit 1
-          }
+          echo %GHCR_PAT% | oras.exe login ghcr.io -u %GHCR_USER% --password-stdin
 
       - name: Upload deliverable to GHCR
         shell: powershell
