@@ -40,7 +40,7 @@ jobs:
           USER: ${{ github.actor }}
         run: |
           echo %MRP_PAT% | oras.exe login ghcr.io -u %USER% --password-stdin
-          oras push ghcr.io/%USER%/CaevesInstaller/Caeves.FCG.App.Release:1.0
+          oras push ghcr.io/%USER%/CaevesInstaller/caeves-fcg-app-release:1.0 "c:\CAEVES.FCG.App_Release_2025-12-04_00-55.msi:application/octet-stream"
 
       - name: Show uploaded package info
         env:
